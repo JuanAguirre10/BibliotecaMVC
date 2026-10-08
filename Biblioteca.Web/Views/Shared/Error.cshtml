@@ -1,0 +1,21 @@
+@model ErrorViewModel
+@{
+    ViewData["Title"] = "Error";
+}
+
+<header class="pagina-cabecera">
+    <div>
+        <h1 class="pagina-titulo">Ocurrió un error</h1>
+        <p class="pagina-sub">No se pudo completar la solicitud. Intente nuevamente.</p>
+    </div>
+    <div class="pagina-acciones">
+        <a asp-controller="Home" asp-action="Index" class="btn-tinta">Volver al inicio</a>
+    </div>
+</header>
+
+@if (Model?.ShowRequestId == true)
+{
+    <section class="tarjeta">
+        <p class="mb-0">Código del error: <code>@Model.RequestId</code></p>
+    </section>
+}

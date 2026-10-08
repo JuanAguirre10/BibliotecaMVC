@@ -1,0 +1,43 @@
+@model Libro
+@*
+    Campos del libro compartidos por Create y Edit.
+    La lista de autores llega del controller en ViewData["Autores"] (SelectList).
+*@
+@{
+    var autores = ViewData["Autores"] as SelectList;
+}
+
+<div asp-validation-summary="ModelOnly" class="resumen-errores" role="alert"></div>
+
+<div class="campos">
+    <div>
+        <label asp-for="Titulo" class="etiqueta"></label>
+        <input asp-for="Titulo" class="form-control campo" maxlength="150" placeholder="Ej.: Cien años de soledad" autocomplete="off" />
+        <span asp-validation-for="Titulo" class="campo-error"></span>
+    </div>
+
+    <div>
+        <label asp-for="AutorId" class="etiqueta"></label>
+        <select asp-for="AutorId" asp-items="autores" class="form-select campo">
+            <option value="">Seleccione un autor</option>
+        </select>
+        <span asp-validation-for="AutorId" class="campo-error"></span>
+    </div>
+
+    <div class="campos-par">
+        <div>
+            <label asp-for="ISBN" class="etiqueta"></label>
+            <input asp-for="ISBN" class="form-control campo mono" maxlength="13" placeholder="9780307474728"
+                   autocomplete="off" spellcheck="false" aria-describedby="isbn-ayuda" data-normalizar="isbn" />
+            <span id="isbn-ayuda" class="ayuda">13 dígitos, sin guiones.</span>
+            <span asp-validation-for="ISBN" class="campo-error"></span>
+        </div>
+
+        <div>
+            <label asp-for="Ejemplares" class="etiqueta"></label>
+            <input asp-for="Ejemplares" type="number" min="0" max="999" step="1" class="form-control campo" placeholder="0" aria-describedby="ejemplares-ayuda" />
+            <span id="ejemplares-ayuda" class="ayuda">Cantidad de copias disponibles.</span>
+            <span asp-validation-for="Ejemplares" class="campo-error"></span>
+        </div>
+    </div>
+</div>

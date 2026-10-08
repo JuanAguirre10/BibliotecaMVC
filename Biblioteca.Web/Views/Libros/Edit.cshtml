@@ -1,0 +1,31 @@
+@model Libro
+@{
+    ViewData["Title"] = "Editar libro";
+}
+
+<header class="pagina-cabecera">
+    <div>
+        <h1 class="pagina-titulo">Editar libro</h1>
+    </div>
+</header>
+
+<div class="contenedor-angosto">
+    <form asp-action="Edit" asp-route-id="@Model.LibroId" method="post" class="tarjeta" novalidate>
+        <input type="hidden" asp-for="LibroId" />
+
+        <partial name="_LibroFormulario" />
+
+        <div class="formulario-pie">
+            <a asp-action="Index" class="btn-sutil">Cancelar</a>
+            <button type="submit" class="btn-tinta">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5" /></svg>
+                Guardar cambios
+            </button>
+        </div>
+    </form>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

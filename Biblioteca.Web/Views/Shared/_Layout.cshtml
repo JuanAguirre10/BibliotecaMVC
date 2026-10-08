@@ -1,0 +1,137 @@
+@{
+    // Controlador actual: sirve para resaltar la opción activa del menú.
+    var controlador = ViewContext.RouteData.Values["controller"]?.ToString() ?? string.Empty;
+    bool EsActivo(string nombre) => string.Equals(controlador, nombre, StringComparison.OrdinalIgnoreCase);
+
+    // El mensaje lo deja el controller después de crear, editar o eliminar.
+    var mensaje = TempData["Mensaje"] as string;
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#1d3a33" />
+    <title>@ViewData["Title"] - Biblioteca</title>
+    <script type="importmap"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..700&family=Source+Sans+3:wght@400;500;600;700&display=swap" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <a class="saltar" href="#contenido">Saltar al contenido</a>
+
+    <aside class="lateral">
+        <div class="lateral-cabecera">
+            <a class="marca" asp-controller="Home" asp-action="Index" aria-label="Biblioteca, ir al inicio">
+                <svg viewBox="0 0 48 48" aria-hidden="true">
+                    <circle cx="24" cy="24" r="23" fill="#c8963e" />
+                    <circle cx="24" cy="24" r="19.5" fill="none" stroke="#1d3a33" stroke-width="1" stroke-dasharray="1.4 2.2" opacity=".55" />
+                    <path d="M11.5 16.2c4.3-1.7 8.5-1.4 12.5 1.3v16c-4-2.7-8.2-3-12.5-1.3z" fill="#fbf7ee" />
+                    <path d="M36.5 16.2c-4.3-1.7-8.5-1.4-12.5 1.3v16c4-2.7 8.2-3 12.5-1.3z" fill="#efe3c9" />
+                    <path d="M24 17.5v16" stroke="#1d3a33" stroke-width="1.3" />
+                    <path d="M14.5 20.5c2.4-.6 4.8-.4 7 .6M14.5 24c2.4-.6 4.8-.4 7 .6M26.5 21.1c2.2-1 4.6-1.2 7-.6M26.5 24.6c2.2-1 4.6-1.2 7-.6" stroke="#1d3a33" stroke-width=".9" stroke-linecap="round" opacity=".45" fill="none" />
+                </svg>
+                <span class="marca-nombre">Biblioteca</span>
+            </a>
+            <button class="lateral-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#menu-principal"
+                    aria-controls="menu-principal" aria-expanded="false" aria-label="Abrir o cerrar el menú">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+                    <path d="M4 7h16M4 12h16M4 17h10" />
+                </svg>
+            </button>
+        </div>
+
+        <nav id="menu-principal" class="lateral-nav collapse" aria-label="Menú principal">
+            <ul class="lateral-lista">
+                <li>
+                    <a class="nav-enlace @(EsActivo("Home") ? "activo" : null)" asp-controller="Home" asp-action="Index"
+                       aria-current="@(EsActivo("Home") ? "page" : null)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M3.5 10.5 12 3.5l8.5 7" />
+                            <path d="M5.5 9v11.5h13V9" />
+                            <path d="M10 20.5v-5.5h4v5.5" />
+                        </svg>
+                        <span>Inicio</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="nav-enlace @(EsActivo("Libros") ? "activo" : null)" asp-controller="Libros" asp-action="Index"
+                       aria-current="@(EsActivo("Libros") ? "page" : null)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <rect x="3.5" y="4" width="4.5" height="16" rx="1" />
+                            <rect x="9" y="6.5" width="4.5" height="13.5" rx="1" />
+                            <path d="m14.6 8.2 4.1-1.1 3.1 11.7-4.1 1.1z" />
+                            <path d="M3.5 8h4.5M9 10h4.5" />
+                        </svg>
+                        <span>Libros</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="nav-enlace @(EsActivo("Socios") ? "activo" : null)" asp-controller="Socios" asp-action="Index"
+                       aria-current="@(EsActivo("Socios") ? "page" : null)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="9" cy="8.5" r="3.25" />
+                            <path d="M3.5 19.5c.8-3.3 3-5.2 5.5-5.2s4.7 1.9 5.5 5.2" />
+                            <path d="M15.5 5.4a3.25 3.25 0 0 1 0 6.2" />
+                            <path d="M17.6 14.6c1.6.7 2.6 2.4 2.9 4.9" />
+                        </svg>
+                        <span>Socios</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="nav-enlace @(EsActivo("Prestamos") ? "activo" : null)" asp-controller="Prestamos" asp-action="Reporte"
+                       aria-current="@(EsActivo("Prestamos") ? "page" : null)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <rect x="5" y="4.5" width="14" height="16" rx="2" />
+                            <path d="M9 4.5V3h6v1.5" />
+                            <path d="M8.5 10h7M8.5 13.5h7M8.5 17h4" />
+                        </svg>
+                        <span>Reporte de préstamos</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <div class="contenido">
+        <main id="contenido" class="contenido-interior" tabindex="-1">
+            @RenderBody()
+        </main>
+
+        <footer class="pie">
+            <p>&copy; @DateTime.Today.Year Biblioteca</p>
+        </footer>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(mensaje))
+    {
+        <div class="aviso-zona">
+            <div class="aviso" role="status" aria-live="polite" data-aviso>
+                <span class="aviso-icono" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m5 12.5 4.5 4.5L19 7.5" />
+                    </svg>
+                </span>
+                <div>
+                    <p class="aviso-titulo">Listo</p>
+                    <p class="aviso-texto">@mensaje</p>
+                </div>
+                <button type="button" class="aviso-cerrar" aria-label="Cerrar aviso" data-aviso-cerrar>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                        <path d="M6 6l12 12M18 6 6 18" />
+                    </svg>
+                </button>
+                <span class="aviso-progreso" aria-hidden="true"></span>
+            </div>
+        </div>
+    }
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

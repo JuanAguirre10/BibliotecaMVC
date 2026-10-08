@@ -1,0 +1,60 @@
+@model IEnumerable<Libro>
+@{
+    ViewData["Title"] = "Libros";
+
+    var busqueda = ViewData["Busqueda"] as string;
+    var total = Model.Count();
+}
+
+<header class="pagina-cabecera">
+    <div>
+        <h1 class="pagina-titulo">Libros</h1>
+    </div>
+    <div class="pagina-acciones">
+        <a asp-action="Create" class="btn-tinta">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+            Nuevo libro
+        </a>
+    </div>
+</header>
+
+<section class="mayor-tarjeta" aria-label="Listado de libros">
+    <div class="mayor-barra">
+        @* Funciona sin JavaScript (GET /Libros?titulo=...); site.js lo convierte en búsqueda en vivo. *@
+        <form asp-action="Index" method="get" role="search" class="buscador" data-busqueda-form>
+            <div class="buscador-campo">
+                <label for="titulo" class="visually-hidden">Buscar por título</label>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+                    <circle cx="11" cy="11" r="6.5" />
+                    <path d="m20 20-4.2-4.2" />
+                </svg>
+                <input id="titulo" name="titulo" type="search" value="@busqueda" class="form-control campo"
+                       placeholder="Buscar por título" autocomplete="off" spellcheck="false" data-busqueda-input />
+            </div>
+            <button type="submit" class="btn-sutil">Buscar</button>
+            <a asp-action="Index" class="enlace-limpiar" hidden="@(string.IsNullOrEmpty(busqueda))" data-busqueda-limpiar>Limpiar</a>
+        </form>
+
+        <p class="mayor-conteo" aria-live="polite">
+            <strong data-busqueda-conteo>@total</strong>
+            <span data-busqueda-etiqueta>@(total == 1 ? "libro" : "libros")</span>
+        </p>
+    </div>
+
+    <div class="mayor-scroll">
+        <table class="mayor">
+            <thead>
+                <tr>
+                    <th scope="col">Título</th>
+                    <th scope="col">Autor</th>
+                    <th scope="col">ISBN</th>
+                    <th scope="col">Ejemplares</th>
+                    <th scope="col"><span class="visually-hidden">Acciones</span></th>
+                </tr>
+            </thead>
+            <tbody data-busqueda-resultados>
+                <partial name="_LibrosResultados" model="Model" />
+            </tbody>
+        </table>
+    </div>
+</section>

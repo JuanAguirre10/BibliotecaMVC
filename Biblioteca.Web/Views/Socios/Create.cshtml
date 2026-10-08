@@ -1,0 +1,51 @@
+@model Socio
+@{
+    ViewData["Title"] = "Nuevo socio";
+}
+
+<header class="pagina-cabecera">
+    <div>
+        <h1 class="pagina-titulo">Nuevo socio</h1>
+    </div>
+</header>
+
+<div class="contenedor-angosto">
+    <form asp-action="Create" method="post" class="tarjeta" novalidate>
+        <div asp-validation-summary="ModelOnly" class="resumen-errores" role="alert"></div>
+
+        <div class="campos">
+            <div class="campo-corto">
+                <label asp-for="DNI" class="etiqueta"></label>
+                <input asp-for="DNI" class="form-control campo mono" maxlength="8" inputmode="numeric"
+                       placeholder="12345678" autocomplete="off" aria-describedby="dni-ayuda" data-normalizar="dni" />
+                <span id="dni-ayuda" class="ayuda">8 dígitos, sin espacios.</span>
+                <span asp-validation-for="DNI" class="campo-error"></span>
+            </div>
+
+            <div>
+                <label asp-for="Nombre" class="etiqueta"></label>
+                <input asp-for="Nombre" class="form-control campo" maxlength="100" placeholder="Ej.: María Fernanda Quispe Rojas" autocomplete="name" />
+                <span asp-validation-for="Nombre" class="campo-error"></span>
+            </div>
+
+            <div>
+                <label asp-for="Email" class="etiqueta">@Html.DisplayNameFor(m => m.Email)<span class="etiqueta-opcional">(opcional)</span></label>
+                <input asp-for="Email" class="form-control campo" maxlength="100" placeholder="nombre@@correo.com" autocomplete="email" />
+                <span asp-validation-for="Email" class="campo-error"></span>
+            </div>
+        </div>
+
+        <div class="formulario-pie">
+            <a asp-action="Index" class="btn-sutil">Cancelar</a>
+            <button type="submit" class="btn-tinta">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5" /></svg>
+                Registrar socio
+            </button>
+        </div>
+    </form>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

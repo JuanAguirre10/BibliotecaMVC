@@ -1,0 +1,59 @@
+@model Libro
+@{
+    ViewData["Title"] = "Eliminar libro";
+}
+
+<header class="pagina-cabecera">
+    <div>
+        <h1 class="pagina-titulo">Eliminar libro</h1>
+    </div>
+</header>
+
+<div class="contenedor-angosto">
+    <section class="advertencia">
+        <span class="advertencia-icono" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 3.5 2.5 20h19z" />
+                <path d="M12 10v4.5M12 17.2h.01" />
+            </svg>
+        </span>
+        <div>
+            <h2>¿Está seguro de eliminar este libro?</h2>
+            <p>El libro ya no aparecerá en la lista, pero sus préstamos anteriores se mantienen en el reporte.</p>
+        </div>
+    </section>
+
+    @* El POST solo marca el libro como inactivo (Activo = 0). *@
+    <form asp-action="Delete" asp-route-id="@Model.LibroId" method="post" class="tarjeta">
+        <dl class="datos">
+            <div>
+                <dt>@Html.DisplayNameFor(m => m.Titulo)</dt>
+                <dd class="datos-titulo">@Model.Titulo</dd>
+            </div>
+            <div>
+                <dt>@Html.DisplayNameFor(m => m.AutorNombre)</dt>
+                <dd>@Model.AutorNombre</dd>
+            </div>
+            <div>
+                <dt>@Html.DisplayNameFor(m => m.ISBN)</dt>
+                <dd class="mono">@Model.ISBN</dd>
+            </div>
+            <div>
+                <dt>@Html.DisplayNameFor(m => m.Ejemplares)</dt>
+                <dd>@Model.Ejemplares</dd>
+            </div>
+        </dl>
+
+        <div class="formulario-pie">
+            <a asp-action="Index" class="btn-sutil">Cancelar</a>
+            <button type="submit" class="btn-peligro">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M4 7h16" />
+                    <path d="M9 7V4.5h6V7" />
+                    <path d="m6 7 1 13h10l1-13" />
+                </svg>
+                Eliminar
+            </button>
+        </div>
+    </form>
+</div>

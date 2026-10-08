@@ -1,0 +1,65 @@
+@model Libro
+@{
+    ViewData["Title"] = "Detalle del libro";
+}
+
+<header class="pagina-cabecera">
+    <div>
+        <h1 class="pagina-titulo">Detalle del libro</h1>
+    </div>
+</header>
+
+<div class="contenedor-angosto">
+    <section class="tarjeta">
+        <dl class="datos">
+            <div>
+                <dt>@Html.DisplayNameFor(m => m.Titulo)</dt>
+                <dd class="datos-titulo">@Model.Titulo</dd>
+            </div>
+            <div>
+                <dt>@Html.DisplayNameFor(m => m.AutorNombre)</dt>
+                <dd>@Model.AutorNombre</dd>
+            </div>
+            <div>
+                <dt>@Html.DisplayNameFor(m => m.AutorNacionalidad)</dt>
+                <dd>@(string.IsNullOrWhiteSpace(Model.AutorNacionalidad) ? "No registrada" : Model.AutorNacionalidad)</dd>
+            </div>
+            <div>
+                <dt>@Html.DisplayNameFor(m => m.ISBN)</dt>
+                <dd class="mono">@Model.ISBN</dd>
+            </div>
+            <div>
+                <dt>@Html.DisplayNameFor(m => m.Ejemplares)</dt>
+                <dd>
+                    @if (Model.Disponible)
+                    {
+                        <span class="pastilla pastilla-ok">@Model.Ejemplares @(Model.Ejemplares == 1 ? "disponible" : "disponibles")</span>
+                    }
+                    else
+                    {
+                        <span class="pastilla pastilla-alerta">Agotado</span>
+                    }
+                </dd>
+            </div>
+        </dl>
+
+        <div class="formulario-pie">
+            <a asp-action="Index" class="btn-sutil">Volver</a>
+            <a asp-action="Delete" asp-route-id="@Model.LibroId" class="btn-sutil texto-peligro">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M4 7h16" />
+                    <path d="M9 7V4.5h6V7" />
+                    <path d="m6 7 1 13h10l1-13" />
+                </svg>
+                Eliminar
+            </a>
+            <a asp-action="Edit" asp-route-id="@Model.LibroId" class="btn-tinta">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M4 20h4L19 9a2.12 2.12 0 0 0-3-3L5 17z" />
+                    <path d="m14 7 3 3" />
+                </svg>
+                Editar
+            </a>
+        </div>
+    </section>
+</div>

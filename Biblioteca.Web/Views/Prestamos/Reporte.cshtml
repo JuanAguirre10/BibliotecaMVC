@@ -1,0 +1,205 @@
+@model IEnumerable<PrestamoReporte>
+@using System.Globalization
+@{
+    ViewData["Title"] = "Reporte de préstamos";
+
+    const string formatoRuta = "yyyy-MM-dd";
+    const string formatoFecha = "dd/MM/yyyy";
+
+    // El controller siempre envía las fechas del filtro como "yyyy-MM-dd".
+    var desde = ViewData["Desde"] as string;
+    var hasta = ViewData["Hasta"] as string;
+
+    // Cultura invariante: así "/" siempre se escribe como barra, sin importar la configuración del servidor.
+    string Fecha(DateTime fecha) => fecha.ToString(formatoFecha, CultureInfo.InvariantCulture);
+    string Ruta(DateTime fecha) => fecha.ToString(formatoRuta, CultureInfo.InvariantCulture);
+
+    string? AFecha(string? valor) =>
+        DateTime.TryParseExact(valor, formatoRuta, CultureInfo.InvariantCulture, DateTimeStyles.None, out var fecha)
+            ? Fecha(fecha)
+            : null;
+
+    var desdeTexto = AFecha(desde);
+    var hastaTexto = AFecha(hasta);
+
+    // Rangos rápidos calculados desde hoy.
+    var hoy = DateTime.Today;
+    var rangos = new (string Texto, DateTime Desde, DateTime Hasta)[]
+    {
+        ("Este mes", new DateTime(hoy.Year, hoy.Month, 1), hoy),
+        ("Últimos 30 días", hoy.AddDays(-30), hoy),
+        ("Últimos 90 días", hoy.AddDays(-90), hoy),
+        ("Este año", new DateTime(hoy.Year, 1, 1), hoy)
+    };
+
+    // Resumen del período: pendientes, vencidos y devueltos no se superponen.
+    var prestamos = Model.ToList();
+    var total = prestamos.Count;
+    var vencidos = prestamos.Count(p => p.Vencido);
+    var pendientes = prestamos.Count(p => p.Estado == "Pendiente" && !p.Vencido);
+    var devueltos = prestamos.Count(p => p.Estado == "Devuelto");
+    var hayErrores = !ViewData.ModelState.IsValid;
+}
+
+<header class="pagina-cabecera">
+    <div>
+        <h1 class="pagina-titulo">Reporte de préstamos</h1>
+        <p class="pagina-sub">
+            @if (desdeTexto is not null && hastaTexto is not null)
+            {
+                <text>Préstamos del @desdeTexto al @hastaTexto.</text>
+            }
+            else
+            {
+                <text>Préstamos por rango de fechas.</text>
+            }
+        </p>
+    </div>
+</header>
+
+<section class="tarjeta filtro-tarjeta" aria-label="Filtro por fechas">
+    <form asp-action="Reporte" method="get" class="filtro">
+        <div class="filtro-campo">
+            <label for="desde" class="etiqueta">Desde</label>
+            <input type="date" id="desde" name="desde" value="@desde" class="form-control campo" />
+        </div>
+        <div class="filtro-campo">
+            <label for="hasta" class="etiqueta">Hasta</label>
+            <input type="date" id="hasta" name="hasta" value="@hasta" class="form-control campo" />
+        </div>
+        <button type="submit" class="btn-tinta">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M4 5h16l-6 7.5V19l-4-2v-4.5z" />
+            </svg>
+            Filtrar
+        </button>
+    </form>
+
+    <nav class="chips" aria-label="Rangos rápidos">
+        @foreach (var rango in rangos)
+        {
+            var rangoDesde = Ruta(rango.Desde);
+            var rangoHasta = Ruta(rango.Hasta);
+            var activo = rangoDesde == desde && rangoHasta == hasta;
+
+            <a asp-action="Reporte" asp-route-desde="@rangoDesde" asp-route-hasta="@rangoHasta"
+               class="chip @(activo ? "activo" : null)" aria-current="@(activo ? "true" : null)">@rango.Texto</a>
+        }
+    </nav>
+</section>
+
+<div asp-validation-summary="ModelOnly" class="resumen-errores" role="alert"></div>
+
+<section class="cifras" aria-label="Resumen del período">
+    <div class="cifra">
+        <p class="cifra-etiqueta">Préstamos</p>
+        <p class="cifra-valor">@total</p>
+    </div>
+    <div class="cifra cifra-pendiente">
+        <p class="cifra-etiqueta"><span class="cifra-punto" aria-hidden="true"></span>Pendientes</p>
+        <p class="cifra-valor">@pendientes</p>
+    </div>
+    <div class="cifra cifra-vencido">
+        <p class="cifra-etiqueta"><span class="cifra-punto" aria-hidden="true"></span>Vencidos</p>
+        <p class="cifra-valor">@vencidos</p>
+    </div>
+    <div class="cifra cifra-devuelto">
+        <p class="cifra-etiqueta"><span class="cifra-punto" aria-hidden="true"></span>Devueltos</p>
+        <p class="cifra-valor">@devueltos</p>
+    </div>
+</section>
+
+<section class="mayor-tarjeta" aria-label="Préstamos del período">
+    <div class="mayor-scroll">
+        <table class="mayor">
+            <thead>
+                <tr>
+                    <th scope="col" class="col-num">@Html.DisplayNameFor(m => m.PrestamoId)</th>
+                    <th scope="col">@Html.DisplayNameFor(m => m.SocioNombre)</th>
+                    <th scope="col">@Html.DisplayNameFor(m => m.Libros)</th>
+                    <th scope="col">@Html.DisplayNameFor(m => m.FechaPrestamo)</th>
+                    <th scope="col">@Html.DisplayNameFor(m => m.FechaLimite)</th>
+                    <th scope="col">@Html.DisplayNameFor(m => m.Estado)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (total == 0)
+                {
+                    <tr class="fila-vacia">
+                        <td colspan="6">
+                            <div class="vacio">
+                                <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <rect x="8" y="10" width="32" height="30" rx="3" />
+                                    <path d="M8 18h32M16 6v8M32 6v8M18 28h12" />
+                                </svg>
+                                @if (hayErrores)
+                                {
+                                    <p class="vacio-titulo">Revise el rango de fechas</p>
+                                }
+                                else
+                                {
+                                    <p class="vacio-titulo">No hay préstamos en estas fechas</p>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+                @foreach (var p in prestamos)
+                {
+                    <tr>
+                        <td class="col-num"><span class="mono">@p.PrestamoId</span></td>
+                        <td>
+                            <span class="fila-titulo">@p.SocioNombre</span>
+                            <span class="fila-sub">DNI <span class="mono">@p.SocioDNI</span></span>
+                        </td>
+                        <td>
+                            <ul class="chips-libros">
+                                @foreach (var titulo in p.ListaLibros)
+                                {
+                                    <li class="chip-libro">@titulo</li>
+                                }
+                            </ul>
+                            @if (p.LibrosPendientes > 0)
+                            {
+                                <span class="nota-pendiente">@p.LibrosPendientes @(p.LibrosPendientes == 1 ? "libro por devolver" : "libros por devolver")</span>
+                            }
+                        </td>
+                        <td>
+                            <time datetime="@Ruta(p.FechaPrestamo)">@Fecha(p.FechaPrestamo)</time>
+                        </td>
+                        <td>
+                            @if (p.Vencido)
+                            {
+                                var atraso = (hoy - p.FechaLimite.Date).Days;
+                                <time datetime="@Ruta(p.FechaLimite)" class="fecha-vencida">@Fecha(p.FechaLimite)</time>
+                                <span class="fecha-nota">@atraso @(atraso == 1 ? "día" : "días") de atraso</span>
+                            }
+                            else
+                            {
+                                <time datetime="@Ruta(p.FechaLimite)">@Fecha(p.FechaLimite)</time>
+                            }
+                        </td>
+                        <td>
+                            @if (p.Vencido)
+                            {
+                                <span class="pastilla pastilla-alerta">Vencido</span>
+                            }
+                            else if (p.Estado == "Devuelto")
+                            {
+                                <span class="pastilla pastilla-ok">Devuelto</span>
+                            }
+                            else if (p.Estado == "Pendiente")
+                            {
+                                <span class="pastilla pastilla-aviso">Pendiente</span>
+                            }
+                            else
+                            {
+                                <span class="pastilla">@p.Estado</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</section>

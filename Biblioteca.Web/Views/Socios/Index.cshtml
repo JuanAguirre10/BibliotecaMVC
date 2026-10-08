@@ -1,0 +1,99 @@
+@model IEnumerable<Socio>
+@{
+    ViewData["Title"] = "Socios";
+
+    var socios = Model.ToList();
+    var conPendientes = socios.Count(s => s.LibrosPendientes > 0);
+}
+
+<header class="pagina-cabecera">
+    <div>
+        <h1 class="pagina-titulo">Socios</h1>
+    </div>
+    <div class="pagina-acciones">
+        <a asp-action="Create" class="btn-tinta">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+            Nuevo socio
+        </a>
+    </div>
+</header>
+
+<section class="mayor-tarjeta" aria-label="Listado de socios">
+    <div class="mayor-barra">
+        <p class="mayor-conteo">
+            <strong>@socios.Count</strong> @(socios.Count == 1 ? "socio registrado" : "socios registrados")
+        </p>
+        @if (conPendientes > 0)
+        {
+            <span class="pastilla pastilla-aviso">@conPendientes @(conPendientes == 1 ? "socio con libros por devolver" : "socios con libros por devolver")</span>
+        }
+    </div>
+
+    <div class="mayor-scroll">
+        <table class="mayor mayor-angosta">
+            <thead>
+                <tr>
+                    <th scope="col">@Html.DisplayNameFor(m => m.Nombre)</th>
+                    <th scope="col">@Html.DisplayNameFor(m => m.DNI)</th>
+                    <th scope="col">@Html.DisplayNameFor(m => m.Email)</th>
+                    <th scope="col">@Html.DisplayNameFor(m => m.LibrosPendientes)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (socios.Count == 0)
+                {
+                    <tr class="fila-vacia">
+                        <td colspan="4">
+                            <div class="vacio">
+                                <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <circle cx="19" cy="17" r="7" />
+                                    <path d="M7 39c1.6-7 6.2-11 12-11s10.4 4 12 11" />
+                                    <path d="M36 16v12M30 22h12" />
+                                </svg>
+                                <p class="vacio-titulo">Todavía no hay socios</p>
+                                <p class="vacio-texto"><a asp-action="Create">Registre al primer socio</a> para poder prestarle libros.</p>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                @foreach (var socio in socios)
+                {
+                    var partes = socio.Nombre.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                    var iniciales = (partes.Length > 1 ? $"{partes[0][0]}{partes[^1][0]}"
+                                    : partes.Length == 1 ? partes[0][..1] : "?").ToUpperInvariant();
+                    var tono = socio.Nombre.Sum(c => (int)c) % 5;
+
+                    <tr>
+                        <td>
+                            <span class="autor">
+                                <span class="avatar tono-@tono" aria-hidden="true">@iniciales</span>
+                                <span class="fila-titulo">@socio.Nombre</span>
+                            </span>
+                        </td>
+                        <td><span class="mono">@socio.DNI</span></td>
+                        <td>
+                            @if (string.IsNullOrWhiteSpace(socio.Email))
+                            {
+                                <span class="texto-tenue">Sin correo</span>
+                            }
+                            else
+                            {
+                                <a href="mailto:@socio.Email">@socio.Email</a>
+                            }
+                        </td>
+                        <td>
+                            @if (socio.LibrosPendientes == 0)
+                            {
+                                <span class="pastilla pastilla-ok">Al día</span>
+                            }
+                            else
+                            {
+                                <span class="pastilla pastilla-aviso">@socio.LibrosPendientes @(socio.LibrosPendientes == 1 ? "pendiente" : "pendientes")</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</section>
