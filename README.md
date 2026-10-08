@@ -17,15 +17,15 @@ Usa Dapper y procedimientos almacenados sobre la base `BibliotecaDB` de la seman
    sqlcmd -S ".\SQLEXPRESS" -E -C -b -f 65001 -i 01_Procedimientos_Web.sql
    ```
 
-2. Ejecutar la web (desde la carpeta `Lab08`):
+2. Ejecutar la web (desde la raíz del repositorio):
 
    ```bash
-   dotnet run --project Biblioteca.Web --launch-profile http
+   dotnet run --launch-profile http
    ```
 
 3. Abrir <http://localhost:5265>
 
-La cadena de conexión `BibliotecaDB` está en `Biblioteca.Web/appsettings.json` y se lee con `IConfiguration` en cada repositorio.
+La cadena de conexión `BibliotecaDB` está en `appsettings.json` y se lee con `IConfiguration` en cada repositorio.
 
 ## Procedimientos almacenados (`Scripts/01_Procedimientos_Web.sql`)
 
